@@ -5,7 +5,7 @@
 import {GoogleGenAI, GenerateContentResponse} from '@google/genai';
 import {useEffect, useState, ChangeEvent} from 'react';
 import ReactDOM from 'react-dom/client';
-import { getDocument, GlobalWorkerOptions, PDFDocumentProxy, PDFPageProxy, TextItem } from 'pdfjs-dist/build/pdf.mjs';
+import { getDocument, GlobalWorkerOptions, PDFDocumentProxy, PDFPageProxy, TextItem } from 'pdfjs-main';
 
 // Configure PDF.js worker source directly using a CDN link.
 GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.mjs';
