@@ -1,11 +1,13 @@
-
 {
   "name": "analyze-transcript-app",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "echo \"No dev script configured, serving static files or relying on Vercel's default for TSX.\"",
-    "build": "mkdir -p dist && cp index.html index.mjs index.css metadata.json dist/",
-    "start": "echo \"No start script configured.\""
+    "dev": "echo \"To run locally with Vite and hot-reloading if vite.config.ts is set up for it: vite dev. Otherwise, serve dist folder after a build.\"",
+    "build": "mkdir -p dist && esbuild index.tsx --bundle --outfile=dist/index.mjs --platform=browser --format=esm --jsx=automatic --define:process.env.API_KEY=\"'$GEMINI_API_KEY'\" && cp index.html index.css metadata.json dist/",
+    "start": "echo \"No start script configured. Serve the 'dist' folder after running 'npm run build'.\""
+  },
+  "devDependencies": {
+    "esbuild": "^0.20.0"
   }
 }
