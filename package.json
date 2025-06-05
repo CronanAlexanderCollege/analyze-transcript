@@ -1,0 +1,24 @@
+{
+  "name": "readtranscriptmaybe",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@google/genai": "^0.7.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "pdfjs-dist/build/pdf.mjs": "4.0.379",
+    "pdfjs-dist/build/pdf.worker.mjs": "latest",
+    "pdfjs-dist": "4.0.379"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "typescript": "~5.7.2",
+    "vite": "^6.2.0"
+  }
+}
