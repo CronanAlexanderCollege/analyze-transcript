@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "echo \"No dev script configured, serving static files or relying on Vercel's default for TSX.\"",
-    "build": "mkdir -p dist && cp index.html index.tsx index.css metadata.json dist/",
+    "build": "mkdir -p dist && cp index.html index.mjs index.css metadata.json dist/",
     "start": "echo \"No start script configured.\""
   }
 }
