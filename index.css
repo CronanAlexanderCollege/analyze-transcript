@@ -2,9 +2,9 @@ body {
   font-family: sans-serif;
   display: flex;
   justify-content: center; /* Horizontally centers the .container */
-  align-items: center; /* Vertically centers the .container */
+  align-items: flex-start; /* Vertically aligns the .container to the top */
   min-height: 100vh;
-  margin: 20px 0; /* Add some margin for scroll */
+  margin: 20px 0; /* Add some margin for scroll and top spacing */
   background-color: #0F172A; /* Dark blue-gray page background */
   color: #CBD5E1; /* Default light text color for the body (slate-300) */
   line-height: 1.6;
