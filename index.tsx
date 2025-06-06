@@ -174,6 +174,8 @@ Transcript:\n\n${extractedText}`;
       const response: GenerateContentResponse = await ai.models.generateContent({
         model: 'gemini-2.5-flash-preview-04-17',
         contents: prompt,
+        grounding: 0,
+        urlContext: 1
       });
       setSummaryText(response.text);
       setSummaryStatus('Summary complete!');
