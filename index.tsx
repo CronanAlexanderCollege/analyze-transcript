@@ -166,7 +166,7 @@ function App() {
     setError(null); // Clear previous errors
 
     try {
-      const prompt = `First, provide a bullet-point list of all course codes and their corresponding grades (e.g., - MATH 101: A+).
+      const prompt = `First, provide a bullet-point list of all course codes and their corresponding grades (e.g., - MATH 101: A+). If a student has attempted a course multiple times, please only list the attempt that resulted in a passing grade. If multiple attempts were passing, list the one with the highest grade. If no attempt resulted in a passing grade, you may list the latest attempt or indicate that all attempts were unsuccessful for that course.
 
 Following the list, please provide a concise general summary of the following academic transcript. Highlight key aspects such as overall performance, number of terms/years attended, CGPA, and any notable trends or repeated courses.
 
@@ -174,8 +174,6 @@ Transcript:\n\n${extractedText}`;
       const response: GenerateContentResponse = await ai.models.generateContent({
         model: 'gemini-2.5-flash-preview-04-17',
         contents: prompt,
-        grounding: 0,
-        urlContext: 1
       });
       setSummaryText(response.text);
       setSummaryStatus('Summary complete!');
