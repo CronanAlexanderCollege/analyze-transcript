@@ -166,7 +166,11 @@ function App() {
     setError(null); // Clear previous errors
 
     try {
-      const prompt = `Please provide a concise summary of the following academic transcript. Highlight key aspects such as overall performance, number of terms/years attended, CGPA, and any notable trends or repeated courses. Transcript:\n\n${extractedText}`;
+      const prompt = `First, provide a bullet-point list of all course codes and their corresponding grades (e.g., - MATH 101: A+).
+
+Following the list, please provide a concise general summary of the following academic transcript. Highlight key aspects such as overall performance, number of terms/years attended, CGPA, and any notable trends or repeated courses.
+
+Transcript:\n\n${extractedText}`;
       const response: GenerateContentResponse = await ai.models.generateContent({
         model: 'gemini-2.5-flash-preview-04-17',
         contents: prompt,
