@@ -31,6 +31,7 @@ function App() {
   const [summaryText, setSummaryText] = useState<string | null>(null);
   const [summaryStatus, setSummaryStatus] = useState<string | null>(null);
   const [isSummarizing, setIsSummarizing] = useState<boolean>(false);
+  const [transcriptValidityMessage, setTranscriptValidityMessage] = useState<string | null>(null);
 
 
   useEffect(() => {
@@ -69,6 +70,7 @@ function App() {
     setSummaryText(null);
     setSummaryStatus(null);
     setIsSummarizing(false);
+    setTranscriptValidityMessage(null);
   };
 
   const extractTextFromPdf = async (data: ArrayBuffer) => {
@@ -76,6 +78,8 @@ function App() {
     setExtractedText(null);
     setSummaryText(null); // Clear previous summary
     setSummaryStatus(null);
+    setTranscriptValidityMessage(null); // Reset validity message
+
     try {
       const loadingTask = getDocument({ data });
       const pdf: PDFDocumentProxy = await loadingTask.promise;
@@ -86,13 +90,24 @@ function App() {
         const pageText = textContent.items.filter(item => 'str' in item).map(item => (item as TextItem).str).join(' ');
         fullText += pageText + '\n';
       }
-      setExtractedText(fullText.trim());
-      setPdfProcessingStatus('Text extracted successfully!');
+
+      const trimmedText = fullText.trim();
+      if (trimmedText) {
+        setExtractedText(trimmedText);
+        if (!trimmedText.toLowerCase().includes('transcript')) {
+          setTranscriptValidityMessage('Warning: The uploaded document does not appear to be a transcript.');
+        }
+        setPdfProcessingStatus(null);
+      } else {
+        setExtractedText(null);
+        setPdfProcessingStatus('No text could be extracted from the PDF.');
+      }
     } catch (err) {
       console.error('Error extracting text from PDF:', err);
       setError('Failed to extract text from the PDF. The file might be corrupted or password-protected.');
       setPdfProcessingStatus('Error extracting text.');
       setExtractedText(null);
+      setTranscriptValidityMessage(null);
     }
   };
 
@@ -185,6 +200,7 @@ function App() {
       {extractedText && (
         <div className="extracted-text-section">
           <h2>Extracted Text:</h2>
+          {transcriptValidityMessage && <p className="transcript-validity-message">{transcriptValidityMessage}</p>}
           <div className="extracted-text-container">
             <pre>{extractedText}</pre>
           </div>
@@ -192,6 +208,7 @@ function App() {
             onClick={handleSummarize}
             disabled={isSummarizing || !extractedText}
             className="summarize-button"
+            aria-live="polite"
           >
             {isSummarizing ? 'Summarizing...' : 'Summarize Transcript'}
           </button>
@@ -199,7 +216,7 @@ function App() {
       )}
 
       {summaryStatus && (
-          <p className={`summary-status-message ${summaryText ? 'success' : 'info'}`}>
+          <p className={`summary-status-message ${summaryText ? 'success' : 'info'}`} aria-live="polite">
             {summaryStatus}
           </p>
       )}

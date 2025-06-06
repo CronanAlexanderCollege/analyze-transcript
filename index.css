@@ -100,6 +100,18 @@ input[type="file"]:hover {
   border: 1px solid #c0392b;
 }
 
+.transcript-validity-message {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: 0.9em;
+  color: #e67e22; /* Orange for warning */
+  padding: 10px;
+  background-color: #fef5e7; /* Light orange background */
+  border: 1px solid #f39c12; /* Orange border */
+  border-radius: 4px;
+  text-align: left; /* Ensure text aligns with other content if needed */
+}
+
 .extracted-text-section {
   margin-top: 30px;
   text-align: left; /* Align text to left for readability */
