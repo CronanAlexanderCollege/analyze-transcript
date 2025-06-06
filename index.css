@@ -133,28 +133,6 @@ input[type="file"]:hover {
   margin-bottom: 15px; /* Add margin below extracted text */
 }
 
-.summarize-button {
-  padding: 10px 20px;
-  font-size: 1em;
-  color: white;
-  background-color: #27ae60; /* Green color for summarize button */
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  display: block;
-  margin: 0 auto 15px auto; /* Center button and add margin */
-}
-
-.summarize-button:hover {
-  background-color: #229954;
-}
-
-.summarize-button:disabled {
-  background-color: #aaa;
-  cursor: not-allowed;
-}
-
 .summary-status-message {
   margin-top: 15px;
   font-size: 0.9em;

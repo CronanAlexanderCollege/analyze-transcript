@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 import {GoogleGenAI, GenerateContentResponse} from '@google/genai';
-import {useEffect, useState, ChangeEvent} from 'react';
+import {useEffect, useState, ChangeEvent, useCallback} from 'react';
 import ReactDOM from 'react-dom/client';
 import { getDocument, GlobalWorkerOptions, PDFDocumentProxy, PDFPageProxy, TextItem } from 'pdfjs-main';
 
@@ -96,11 +96,14 @@ function App() {
         setExtractedText(trimmedText);
         if (!trimmedText.toLowerCase().includes('transcript')) {
           setTranscriptValidityMessage('Warning: The uploaded document does not appear to be a transcript.');
+        } else {
+          setTranscriptValidityMessage(null); // Explicitly null if it's a transcript
         }
         setPdfProcessingStatus(null);
       } else {
         setExtractedText(null);
         setPdfProcessingStatus('No text could be extracted from the PDF.');
+        setTranscriptValidityMessage(null);
       }
     } catch (err) {
       console.error('Error extracting text from PDF:', err);
@@ -149,9 +152,11 @@ function App() {
     }
   };
 
-  const handleSummarize = async () => {
+  const handleSummarize = useCallback(async () => {
     if (!extractedText || isSummarizing || !ai) {
-      if (!ai) setError("AI client not initialized. Cannot summarize.");
+      if (!ai && !error) setError("AI client not initialized. Cannot summarize.");
+      // Do not proceed if extractedText is null or already summarizing.
+      // Error for !ai is set if not already set by initializeApp
       return;
     }
 
@@ -176,7 +181,17 @@ function App() {
     } finally {
       setIsSummarizing(false);
     }
-  };
+  }, [ai, extractedText, isSummarizing, error, setError, setIsSummarizing, setSummaryStatus, setSummaryText]);
+
+
+  useEffect(() => {
+    // Auto-summarize if text is extracted, it's considered a valid transcript,
+    // not currently summarizing, and no summary exists yet for this text.
+    if (extractedText && transcriptValidityMessage === null && !isSummarizing && !summaryText && ai) {
+      handleSummarize();
+    }
+  }, [extractedText, transcriptValidityMessage, isSummarizing, summaryText, ai, handleSummarize]);
+
 
   return (
     <div className="container">
@@ -204,14 +219,7 @@ function App() {
           <div className="extracted-text-container">
             <pre>{extractedText}</pre>
           </div>
-          <button
-            onClick={handleSummarize}
-            disabled={isSummarizing || !extractedText}
-            className="summarize-button"
-            aria-live="polite"
-          >
-            {isSummarizing ? 'Summarizing...' : 'Summarize Transcript'}
-          </button>
+          {/* Summarize button removed for automatic summarization */}
         </div>
       )}
 
@@ -220,6 +228,8 @@ function App() {
             {summaryStatus}
           </p>
       )}
+      {isSummarizing && !summaryStatus && <p className="summary-status-message info" aria-live="polite">Generating summary...</p>}
+
 
       {summaryText && (
         <div className="summary-section">
