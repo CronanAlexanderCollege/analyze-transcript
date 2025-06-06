@@ -1,34 +1,35 @@
 body {
   font-family: sans-serif;
   display: flex;
-  justify-content: center;
-  align-items: flex-start; /* Align to top for scrollable content */
+  justify-content: center; /* Horizontally centers the .container */
+  align-items: center; /* Vertically centers the .container */
   min-height: 100vh;
   margin: 20px 0; /* Add some margin for scroll */
-  background-color: #f4f4f9;
-  color: #333;
+  background-color: #0F172A; /* Dark blue-gray page background */
+  color: #CBD5E1; /* Default light text color for the body (slate-300) */
   line-height: 1.6;
 }
 
 .container {
   text-align: center;
-  background-color: #fff;
+  background-color: #1E293B; /* Darker slate background for container (slate-800) */
+  color: #CBD5E1; /* Default light text color for container content (slate-300) */
   padding: 30px 40px;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4); /* Adjusted shadow for dark theme */
   width: 80%;
-  max-width: 700px; /* Increased max-width */
+  max-width: 700px;
 }
 
 h1 {
   font-size: 2em;
-  color: #2c3e50;
+  color: #38BDF8; /* Bright blue for main header (sky-400) */
   margin-bottom: 20px;
 }
 
 h2 {
   font-size: 1.2em;
-  color: #34495e;
+  color: #CBD5E1; /* Light slate for sub-headings (slate-300) */
   margin-top: 30px;
   margin-bottom: 10px;
 }
@@ -36,18 +37,19 @@ h2 {
 .upload-section {
   margin-top: 20px;
   padding: 20px;
-  border: 2px dashed #ccc;
+  border: 2px dashed #475569; /* Darker dashed border (slate-600) */
   border-radius: 8px;
-  background-color: #fafafa;
+  background-color: #334155; /* Slightly lighter slate for upload section bg (slate-700) */
 }
 
 input[type="file"] {
   display: block;
-  margin: 15px auto 10px; /* Adjusted margin */
+  margin: 15px auto 10px;
   padding: 10px 15px;
-  border: 1px solid #ddd;
+  border: 1px solid #475569; /* Slate-600 border */
   border-radius: 4px;
-  background-color: #fff;
+  background-color: #334155; /* Slate-700 background */
+  color: #CBD5E1; /* Light text for input itself */
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
@@ -56,81 +58,81 @@ input[type="file"]::file-selector-button {
   margin-right: 10px;
   padding: 8px 12px;
   border: none;
-  background-color: #3498db;
-  color: white;
+  background-color: #38BDF8; /* Sky-400 button background */
+  color: #0F172A; /* Dark text for button (slate-900) */
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
 input[type="file"]::file-selector-button:hover {
-  background-color: #2980b9;
+  background-color: #0EA5E9; /* Sky-500 for hover */
 }
 
 input[type="file"]:hover {
-  background-color: #f9f9f9;
+  background-color: #475569; /* Slate-600 for input hover */
 }
 
 .file-status-message {
   margin-top: 15px;
   font-size: 0.9em;
-  color: #333;
-  padding: 10px;
-  background-color: #e6f7ff; /* Light blue for informational messages */
-  border: 1px solid #91d5ff; /* Blue border */
+  color: #E2E8F0; /* Slate-200 text */
+  background-color: #334155; /* Slate-700 background */
+  border: 1px solid #475569; /* Slate-600 border */
   border-radius: 4px;
+  padding: 10px;
 }
 
 .pdf-processing-status {
   margin-top: 10px;
   font-size: 0.9em;
-  color: #5499c7; /* A slightly different blue for PDF status */
-  padding: 10px;
-  background-color: #eaf2f8;
-  border: 1px solid #aed6f1;
+  color: #93C5FD; /* Light blue text (blue-300) */
+  background-color: #334155; /* Slate-700 background */
+  border: 1px solid #475569; /* Slate-600 border */
   border-radius: 4px;
+  padding: 10px;
 }
 
 .error-message {
-  color: #c0392b;
-  background-color: #fdd;
+  color: #FECACA; /* Light red text (red-200) */
+  background-color: #5B2121; /* Dark red background (rose-800/900 like) */
   padding: 10px;
   border-radius: 4px;
   margin-bottom: 15px;
-  border: 1px solid #c0392b;
+  border: 1px solid #DC2626; /* Red-600 border */
 }
 
 .transcript-validity-message {
   margin-top: 10px;
   margin-bottom: 10px;
   font-size: 0.9em;
-  color: #e67e22; /* Orange for warning */
-  padding: 10px;
-  background-color: #fef5e7; /* Light orange background */
-  border: 1px solid #f39c12; /* Orange border */
+  color: #FCD34D; /* Amber-300 text for warning */
+  background-color: #451A03; /* Dark amber background (e.g. amber-900 darker shade) */
+  border: 1px solid #F59E0B; /* Amber-500 border */
   border-radius: 4px;
-  text-align: left; /* Ensure text aligns with other content if needed */
+  padding: 10px;
+  text-align: left;
 }
 
 .extracted-text-section {
   margin-top: 30px;
-  text-align: left; /* Align text to left for readability */
+  text-align: left;
 }
 
 .extracted-text-container {
-  background-color: #fdfefe;
-  border: 1px solid #e5e7e9;
+  background-color: #0F172A; /* Page background (slate-900), or #1E293B if prefer container color */
+  border: 1px solid #334155; /* Slate-700 border */
   border-radius: 4px;
   padding: 15px;
-  max-height: 300px; /* Adjusted max height */
-  overflow-y: auto; /* Enable vertical scrolling */
-  white-space: pre-wrap; /* Preserve whitespace and wrap lines */
-  word-wrap: break-word; /* Break long words */
-  font-family: monospace; /* Use a monospace font for raw text */
+  max-height: 300px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: monospace;
   font-size: 0.9em;
   line-height: 1.5;
-  color: #212f3c;
-  margin-bottom: 15px; /* Add margin below extracted text */
+  color: #94A3B8; /* Dimmer text for raw output (slate-400) */
+  margin-bottom: 15px;
 }
 
 .summary-status-message {
@@ -141,17 +143,16 @@ input[type="file"]:hover {
 }
 
 .summary-status-message.success {
-  color: #1e8449;
-  background-color: #e8f8f0;
-  border: 1px solid #a9dfbf;
+  color: #A7F3D0; /* Light green text (green-200) */
+  background-color: #14532D; /* Dark green background (green-900) */
+  border: 1px solid #22C55E; /* Green-500 border */
 }
 
-.summary-status-message.info { /* For 'generating summary' or errors */
-  color: #5499c7;
-  background-color: #eaf2f8;
-  border: 1px solid #aed6f1;
+.summary-status-message.info {
+  color: #93C5FD; /* Light blue text (blue-300) */
+  background-color: #1E3A8A; /* Dark blue background (blue-900) */
+  border: 1px solid #3B82F6; /* Blue-500 border */
 }
-
 
 .summary-section {
   margin-top: 20px;
@@ -159,16 +160,16 @@ input[type="file"]:hover {
 }
 
 .summary-text-container {
-  background-color: #f9f9f9; /* Slightly different background for summary */
-  border: 1px solid #eaecee;
+  background-color: #0F172A; /* Page background (slate-900), or #1E293B */
+  border: 1px solid #334155; /* Slate-700 border */
   border-radius: 4px;
   padding: 15px;
-  max-height: 300px; /* Max height for summary */
+  max-height: 300px;
   overflow-y: auto;
   white-space: pre-wrap;
   word-wrap: break-word;
-  font-family: Arial, sans-serif; /* More readable font for summary */
+  font-family: Arial, sans-serif;
   font-size: 0.95em;
   line-height: 1.6;
-  color: #333;
+  color: #CBD5E1; /* Light slate text (slate-300) for summary */
 }
