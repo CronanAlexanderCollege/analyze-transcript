@@ -43,7 +43,7 @@ function App() {
       try {
         const responseStream = await ai.models.generateContentStream({
           model: 'gemini-2.5-flash-preview-04-17',
-          contents: 'Display a simple greeting stating you are here to help',
+          contents: 'Briefly! Greet the user and advise that an uploaded transcript will be summarized.',
         });
 
         let greeting = '';
