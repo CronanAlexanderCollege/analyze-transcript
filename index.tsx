@@ -336,30 +336,32 @@ Transcript:\n\n${extractedText}`;
       )}
 
       {/* Transfer Agreements Section */}
-      {summaryText && !isSummarizing && ( // Only show this section if summary is complete
+      {summaryText && !isSummarizing && ( 
         <div className="transfer-agreements-section">
           <h2>Potential Transfer Agreements:</h2>
-          {transferDataLoading && <p className="status-message info">Loading transfer agreements...</p>}
-          {transferDataError && <p className="status-message error">{transferDataError}</p>}
-          {!transferDataLoading && !transferDataError && transferData && matchedAgreements === null && (
-            <p className="status-message info">Processing transfer matches...</p>
-          )}
-          {!transferDataLoading && !transferDataError && transferData && matchedAgreements && matchedAgreements.length > 0 && (
-            matchedAgreements.map((agreement, index) => (
-              <div key={agreement.Id + '-' + index} className="transfer-agreement-item">
-                <p>
-                  <strong>Your course:</strong> {agreement.SndrInstitutionName} - {agreement.SndrSubjectCode} {agreement.SndrCourseNumber}: {agreement.SndrCourseTitle} ({agreement.SndrCourseCredit} credits)
-                </p>
-                <p>
-                  <strong>Transfers to:</strong> {agreement.RcvrInstitutionName} as {agreement.Detail}
-                </p>
-                {agreement.Condition && <p><strong>Condition:</strong> {agreement.Condition}</p>}
-              </div>
-            ))
-          )}
-          {!transferDataLoading && !transferDataError && transferData && matchedAgreements && matchedAgreements.length === 0 && (
-            <p className="status-message">No potential transfer agreements found for the summarized courses.</p>
-          )}
+          <div className="transfer-agreements-content-container">
+            {transferDataLoading && <p className="status-message info">Loading transfer agreements...</p>}
+            {transferDataError && <p className="status-message error">{transferDataError}</p>}
+            {!transferDataLoading && !transferDataError && transferData && matchedAgreements === null && (
+              <p className="status-message info">Processing transfer matches...</p>
+            )}
+            {!transferDataLoading && !transferDataError && transferData && matchedAgreements && matchedAgreements.length > 0 && (
+              matchedAgreements.map((agreement, index) => (
+                <div key={agreement.Id + '-' + index} className="transfer-agreement-item">
+                  <p>
+                    <strong>Your course:</strong> {agreement.SndrInstitutionName} - {agreement.SndrSubjectCode} {agreement.SndrCourseNumber}: {agreement.SndrCourseTitle} ({agreement.SndrCourseCredit} credits)
+                  </p>
+                  <p>
+                    <strong>Transfers to:</strong> {agreement.RcvrInstitutionName} as {agreement.Detail}
+                  </p>
+                  {agreement.Condition && <p><strong>Condition:</strong> {agreement.Condition}</p>}
+                </div>
+              ))
+            )}
+            {!transferDataLoading && !transferDataError && transferData && matchedAgreements && matchedAgreements.length === 0 && (
+              <p className="status-message">No potential transfer agreements found for the summarized courses.</p>
+            )}
+          </div>
         </div>
       )}
     </div>

@@ -179,23 +179,35 @@ input[type="file"]:hover {
 .transfer-agreements-section {
   margin-top: 30px;
   text-align: left;
-  padding: 20px;
-  border: 1px solid #334155; /* Slate-700 border */
-  border-radius: 8px;
-  background-color: #0F172A; /* Slightly darker than container for depth, or #1E293B for consistency */
+  /* Styles like padding, border, background-color are moved to the inner container */
 }
 
 .transfer-agreements-section h2 {
-  margin-top: 0; /* Adjust as it's the first element in this section */
+  margin-top: 0; /* Keep this if it's the desired spacing for the heading */
+}
+
+.transfer-agreements-content-container {
+  background-color: #0F172A;
+  border: 1px solid #334155;
+  border-radius: 4px;
+  padding: 15px;
+  max-height: 300px; /* Or a different height if desired */
+  overflow-y: auto;
+  white-space: normal; /* Changed from pre-wrap as content is structured HTML */
+  word-wrap: break-word;
+  font-family: Arial, sans-serif;
+  font-size: 0.95em;
+  line-height: 1.6;
+  color: #CBD5E1;
 }
 
 .transfer-agreement-item {
-  background-color: #1E293B; /* Container background, or #334155 for a bit lighter */
-  border: 1px solid #475569; /* Slate-600 border */
+  background-color: #1E293B; /* Slightly lighter than the content container bg, for item differentiation */
+  border: 1px solid #475569; 
   border-radius: 6px;
   padding: 15px;
   margin-bottom: 15px;
-  color: #CBD5E1; /* Slate-300 */
+  color: #CBD5E1; 
 }
 
 .transfer-agreement-item p {
@@ -204,7 +216,7 @@ input[type="file"]:hover {
 }
 
 .transfer-agreement-item strong {
-  color: #94A3B8; /* Slate-400 for labels */
+  color: #94A3B8; 
 }
 
 .status-message {
@@ -212,17 +224,18 @@ input[type="file"]:hover {
   font-size: 0.9em;
   padding: 10px;
   border-radius: 4px;
-  text-align: center;
+  text-align: center; /* Centering status messages within the content container */
 }
 
-.status-message.info {
-  color: #93C5FD; /* Light blue text (blue-300) */
-  background-color: #1E3A8A; /* Dark blue background (blue-900) */
-  border: 1px solid #3B82F6; /* Blue-500 border */
+/* Specific status messages inside the new container might need adjusted selectors if they were originally styled based on the outer section */
+.transfer-agreements-content-container .status-message.info {
+  color: #93C5FD; 
+  background-color: #1E3A8A; 
+  border: 1px solid #3B82F6; 
 }
 
-.status-message.error {
-  color: #FECACA; /* Light red text (red-200) */
-  background-color: #5B2121; /* Dark red background (rose-800/900 like) */
-  border: 1px solid #DC2626; /* Red-600 border */
+.transfer-agreements-content-container .status-message.error {
+  color: #FECACA; 
+  background-color: #5B2121; 
+  border: 1px solid #DC2626; 
 }
