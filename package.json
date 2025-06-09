@@ -1,10 +1,11 @@
+
 {
   "name": "analyze-transcript-app",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "echo \"To run locally with Vite and hot-reloading if vite.config.ts is set up for it: vite dev. Otherwise, serve dist folder after a build.\"",
-    "build": "mkdir -p dist && esbuild index.tsx --bundle --outfile=dist/index.mjs --platform=browser --format=esm --jsx=automatic --define:process.env.API_KEY=\"'$GEMINI_API_KEY'\" --external:@google/genai --external:react --external:react-dom/client --external:pdfjs-main --external:react/jsx-runtime && cp index.html index.css metadata.json dist/",
+        "build": "mkdir -p dist && esbuild index.tsx --bundle --outfile=dist/index.mjs --platform=browser --format=esm --jsx=automatic --define:process.env.API_KEY=\"'$GEMINI_API_KEY'\" --external:@google/genai --external:react --external:react-dom/client --external:pdfjs-main --external:react/jsx-runtime && cp index.html index.css metadata.json AC_Transfer_DataFull-Extended.json dist/",
     "start": "echo \"No start script configured. Serve the 'dist' folder after running 'npm run build'.\""
   },
   "devDependencies": {

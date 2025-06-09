@@ -1,3 +1,4 @@
+
 body {
   font-family: sans-serif;
   display: flex;
@@ -172,4 +173,56 @@ input[type="file"]:hover {
   font-size: 0.95em;
   line-height: 1.6;
   color: #CBD5E1; /* Light slate text (slate-300) for summary */
+}
+
+/* Transfer Agreements Section */
+.transfer-agreements-section {
+  margin-top: 30px;
+  text-align: left;
+  padding: 20px;
+  border: 1px solid #334155; /* Slate-700 border */
+  border-radius: 8px;
+  background-color: #0F172A; /* Slightly darker than container for depth, or #1E293B for consistency */
+}
+
+.transfer-agreements-section h2 {
+  margin-top: 0; /* Adjust as it's the first element in this section */
+}
+
+.transfer-agreement-item {
+  background-color: #1E293B; /* Container background, or #334155 for a bit lighter */
+  border: 1px solid #475569; /* Slate-600 border */
+  border-radius: 6px;
+  padding: 15px;
+  margin-bottom: 15px;
+  color: #CBD5E1; /* Slate-300 */
+}
+
+.transfer-agreement-item p {
+  margin: 5px 0;
+  font-size: 0.9em;
+}
+
+.transfer-agreement-item strong {
+  color: #94A3B8; /* Slate-400 for labels */
+}
+
+.status-message {
+  margin-top: 10px;
+  font-size: 0.9em;
+  padding: 10px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.status-message.info {
+  color: #93C5FD; /* Light blue text (blue-300) */
+  background-color: #1E3A8A; /* Dark blue background (blue-900) */
+  border: 1px solid #3B82F6; /* Blue-500 border */
+}
+
+.status-message.error {
+  color: #FECACA; /* Light red text (red-200) */
+  background-color: #5B2121; /* Dark red background (rose-800/900 like) */
+  border: 1px solid #DC2626; /* Red-600 border */
 }

@@ -1,3 +1,4 @@
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -20,6 +21,23 @@ try {
   // The UI will show an error message if `ai` remains null and API calls are attempted.
 }
 
+interface TransferAgreement {
+  Id: number;
+  SndrInstitutionName: string;
+  SndrSubjectCode: string;
+  SndrCourseNumber: string;
+  SndrCourseTitle: string;
+  SndrCourseCredit: number;
+  RcvrInstitutionName: string;
+  Detail: string; // e.g., "AU ENGL 2XX (3)"
+  Condition?: string | null;
+  // Add other fields if needed for display, but keep it concise
+}
+
+interface PassedCourse {
+  subject: string;
+  number: string;
+}
 
 function App() {
   const [greetingMessage, setGreetingMessage] = useState('');
@@ -32,6 +50,11 @@ function App() {
   const [summaryStatus, setSummaryStatus] = useState<string | null>(null);
   const [isSummarizing, setIsSummarizing] = useState<boolean>(false);
   const [transcriptValidityMessage, setTranscriptValidityMessage] = useState<string | null>(null);
+
+  const [transferData, setTransferData] = useState<TransferAgreement[] | null>(null);
+  const [transferDataLoading, setTransferDataLoading] = useState<boolean>(true);
+  const [transferDataError, setTransferDataError] = useState<string | null>(null);
+  const [matchedAgreements, setMatchedAgreements] = useState<TransferAgreement[] | null>(null);
 
 
   useEffect(() => {
@@ -60,6 +83,28 @@ function App() {
     };
 
     initializeApp();
+
+    // Fetch transfer data
+    const fetchTransferData = async () => {
+      setTransferDataLoading(true);
+      setTransferDataError(null);
+      try {
+        const response = await fetch('./AC_Transfer_DataFull-Extended.json');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data: TransferAgreement[] = await response.json();
+        setTransferData(data);
+      } catch (err) {
+        console.error('Failed to load transfer agreements:', err);
+        setTransferDataError('Failed to load transfer agreements. Some features may be unavailable.');
+        setTransferData(null);
+      } finally {
+        setTransferDataLoading(false);
+      }
+    };
+    fetchTransferData();
+
   }, []);
 
   const resetPdfStates = () => {
@@ -71,14 +116,16 @@ function App() {
     setSummaryStatus(null);
     setIsSummarizing(false);
     setTranscriptValidityMessage(null);
+    setMatchedAgreements(null); // Reset matched agreements
   };
 
   const extractTextFromPdf = async (data: ArrayBuffer) => {
     setPdfProcessingStatus('Extracting text from PDF...');
     setExtractedText(null);
-    setSummaryText(null); // Clear previous summary
+    setSummaryText(null);
     setSummaryStatus(null);
-    setTranscriptValidityMessage(null); // Reset validity message
+    setTranscriptValidityMessage(null);
+    setMatchedAgreements(null);
 
     try {
       const loadingTask = getDocument({ data });
@@ -97,7 +144,7 @@ function App() {
         if (!trimmedText.toLowerCase().includes('transcript')) {
           setTranscriptValidityMessage('Warning: The uploaded document does not appear to be a transcript.');
         } else {
-          setTranscriptValidityMessage(null); // Explicitly null if it's a transcript
+          setTranscriptValidityMessage(null);
         }
         setPdfProcessingStatus(null);
       } else {
@@ -116,9 +163,8 @@ function App() {
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    setError(null); // Clear general errors
+    setError(null);
     resetPdfStates();
-
 
     if (file) {
       if (file.type !== "application/pdf") {
@@ -155,15 +201,14 @@ function App() {
   const handleSummarize = useCallback(async () => {
     if (!extractedText || isSummarizing || !ai) {
       if (!ai && !error) setError("AI client not initialized. Cannot summarize.");
-      // Do not proceed if extractedText is null or already summarizing.
-      // Error for !ai is set if not already set by initializeApp
       return;
     }
 
     setIsSummarizing(true);
     setSummaryStatus('Generating summary...');
     setSummaryText(null);
-    setError(null); // Clear previous errors
+    setError(null);
+    setMatchedAgreements(null);
 
     try {
       const prompt = `First, provide a bullet-point list of all course codes and their corresponding grades (e.g., - MATH 101: A+).
@@ -189,14 +234,59 @@ Transcript:\n\n${extractedText}`;
     }
   }, [ai, extractedText, isSummarizing, error, setError, setIsSummarizing, setSummaryStatus, setSummaryText]);
 
+  const parsePassedCoursesFromSummary = (summary: string): PassedCourse[] => {
+    const courses: PassedCourse[] = [];
+    const courseRegex = /^- \s*([A-Z]{2,6})\s*([A-Z0-9]{3,5})\s*:\s*([A-Z][+-]?|[B-DFP][+-]?|[0-9]{1,3}%?)/gm;
+    let match;
+    while ((match = courseRegex.exec(summary)) !== null) {
+        // Ensure the grade is not 'W' (already handled by prompt, but good for robustness)
+        // The regex already filters for typical passing grades, excluding 'W' by not matching it.
+        courses.push({ subject: match[1].trim(), number: match[2].trim() });
+    }
+    return courses;
+  };
+
+  const findAndDisplayTransferMatches = useCallback(() => {
+    if (!summaryText || !transferData) {
+      setMatchedAgreements(null);
+      return;
+    }
+
+    const passedCourses = parsePassedCoursesFromSummary(summaryText);
+    if (passedCourses.length === 0) {
+      setMatchedAgreements([]); // No courses to match
+      return;
+    }
+
+    const matches: TransferAgreement[] = [];
+    passedCourses.forEach(passedCourse => {
+      transferData.forEach(agreement => {
+        if (agreement.SndrSubjectCode.toUpperCase() === passedCourse.subject.toUpperCase() &&
+            agreement.SndrCourseNumber.toUpperCase() === passedCourse.number.toUpperCase()) {
+          matches.push(agreement);
+        }
+      });
+    });
+    setMatchedAgreements(matches);
+  }, [summaryText, transferData]);
+
 
   useEffect(() => {
-    // Auto-summarize if text is extracted, it's considered a valid transcript,
-    // not currently summarizing, and no summary exists yet for this text.
     if (extractedText && transcriptValidityMessage === null && !isSummarizing && !summaryText && ai) {
       handleSummarize();
     }
   }, [extractedText, transcriptValidityMessage, isSummarizing, summaryText, ai, handleSummarize]);
+
+  useEffect(() => {
+    if (summaryText && transferData && !transferDataLoading && !transferDataError) {
+      findAndDisplayTransferMatches();
+    }
+     // Explicitly set matchedAgreements to null if conditions aren't met (e.g., new summary is loading)
+     // This ensures the old matches are cleared when a new summary process starts or if transfer data is not ready.
+    else if (!summaryText || transferDataLoading || transferDataError) {
+        setMatchedAgreements(null);
+    }
+  }, [summaryText, transferData, transferDataLoading, transferDataError, findAndDisplayTransferMatches]);
 
 
   return (
@@ -225,24 +315,51 @@ Transcript:\n\n${extractedText}`;
           <div className="extracted-text-container">
             <pre>{extractedText}</pre>
           </div>
-          {/* Summarize button removed for automatic summarization */}
         </div>
       )}
 
       {summaryStatus && (
-          <p className={`summary-status-message ${summaryText ? 'success' : 'info'}`} aria-live="polite">
+          <p className={`summary-status-message ${summaryText && !isSummarizing ? 'success' : 'info'}`} aria-live="polite">
             {summaryStatus}
           </p>
       )}
       {isSummarizing && !summaryStatus && <p className="summary-status-message info" aria-live="polite">Generating summary...</p>}
 
 
-      {summaryText && (
+      {summaryText && !isSummarizing && (
         <div className="summary-section">
           <h2>Transcript Summary:</h2>
           <div className="summary-text-container">
             {summaryText}
           </div>
+        </div>
+      )}
+
+      {/* Transfer Agreements Section */}
+      {summaryText && !isSummarizing && ( // Only show this section if summary is complete
+        <div className="transfer-agreements-section">
+          <h2>Potential Transfer Agreements:</h2>
+          {transferDataLoading && <p className="status-message info">Loading transfer agreements...</p>}
+          {transferDataError && <p className="status-message error">{transferDataError}</p>}
+          {!transferDataLoading && !transferDataError && transferData && matchedAgreements === null && (
+            <p className="status-message info">Processing transfer matches...</p>
+          )}
+          {!transferDataLoading && !transferDataError && transferData && matchedAgreements && matchedAgreements.length > 0 && (
+            matchedAgreements.map((agreement, index) => (
+              <div key={agreement.Id + '-' + index} className="transfer-agreement-item">
+                <p>
+                  <strong>Your course:</strong> {agreement.SndrInstitutionName} - {agreement.SndrSubjectCode} {agreement.SndrCourseNumber}: {agreement.SndrCourseTitle} ({agreement.SndrCourseCredit} credits)
+                </p>
+                <p>
+                  <strong>Transfers to:</strong> {agreement.RcvrInstitutionName} as {agreement.Detail}
+                </p>
+                {agreement.Condition && <p><strong>Condition:</strong> {agreement.Condition}</p>}
+              </div>
+            ))
+          )}
+          {!transferDataLoading && !transferDataError && transferData && matchedAgreements && matchedAgreements.length === 0 && (
+            <p className="status-message">No potential transfer agreements found for the summarized courses.</p>
+          )}
         </div>
       )}
     </div>
