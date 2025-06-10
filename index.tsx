@@ -1,4 +1,3 @@
-
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -55,6 +54,8 @@ function App() {
   const [transferDataLoading, setTransferDataLoading] = useState<boolean>(true);
   const [transferDataError, setTransferDataError] = useState<string | null>(null);
   const [matchedAgreements, setMatchedAgreements] = useState<TransferAgreement[] | null>(null);
+  const [totalMatchesCount, setTotalMatchesCount] = useState<number>(0);
+  const [distinctUniversitiesCount, setDistinctUniversitiesCount] = useState<number>(0);
 
 
   useEffect(() => {
@@ -116,7 +117,9 @@ function App() {
     setSummaryStatus(null);
     setIsSummarizing(false);
     setTranscriptValidityMessage(null);
-    setMatchedAgreements(null); // Reset matched agreements
+    setMatchedAgreements(null); 
+    setTotalMatchesCount(0);
+    setDistinctUniversitiesCount(0);
   };
 
   const extractTextFromPdf = async (data: ArrayBuffer) => {
@@ -126,6 +129,8 @@ function App() {
     setSummaryStatus(null);
     setTranscriptValidityMessage(null);
     setMatchedAgreements(null);
+    setTotalMatchesCount(0);
+    setDistinctUniversitiesCount(0);
 
     try {
       const loadingTask = getDocument({ data });
@@ -209,6 +214,8 @@ function App() {
     setSummaryText(null);
     setError(null);
     setMatchedAgreements(null);
+    setTotalMatchesCount(0);
+    setDistinctUniversitiesCount(0);
 
     try {
       const prompt = `First, provide a bullet-point list of all course codes and their corresponding grades (e.g., - MATH 101: A+).
@@ -252,19 +259,22 @@ Transcript:\n\n${extractedText}`;
   const findAndDisplayTransferMatches = useCallback(() => {
     if (!summaryText || !transferData) {
       setMatchedAgreements(null);
+      setTotalMatchesCount(0);
+      setDistinctUniversitiesCount(0);
       return;
     }
 
     const passedCourses = parsePassedCoursesFromSummary(summaryText);
     if (passedCourses.length === 0) {
-      setMatchedAgreements([]); // No courses to match
+      setMatchedAgreements([]); 
+      setTotalMatchesCount(0);
+      setDistinctUniversitiesCount(0);
       return;
     }
 
     const matches: TransferAgreement[] = [];
     passedCourses.forEach(passedCourse => {
       transferData.forEach(agreement => {
-        // Trim whitespace from JSON fields for robust matching
         if (agreement.SndrSubjectCode && agreement.SndrCourseNumber &&
             agreement.SndrSubjectCode.trim().toUpperCase() === passedCourse.subject.toUpperCase() &&
             agreement.SndrCourseNumber.trim().toUpperCase() === passedCourse.number.toUpperCase()) {
@@ -272,6 +282,17 @@ Transcript:\n\n${extractedText}`;
         }
       });
     });
+    
+    setTotalMatchesCount(matches.length);
+    if (matches.length > 0) {
+      const distinctUnis = new Set<string>();
+      matches.forEach(agreement => {
+        distinctUnis.add(agreement.RcvrInstitutionName);
+      });
+      setDistinctUniversitiesCount(distinctUnis.size);
+    } else {
+      setDistinctUniversitiesCount(0);
+    }
     setMatchedAgreements(matches);
   }, [summaryText, transferData]);
 
@@ -286,10 +307,10 @@ Transcript:\n\n${extractedText}`;
     if (summaryText && transferData && !transferDataLoading && !transferDataError) {
       findAndDisplayTransferMatches();
     }
-     // Explicitly set matchedAgreements to null if conditions aren't met (e.g., new summary is loading)
-     // This ensures the old matches are cleared when a new summary process starts or if transfer data is not ready.
     else if (!summaryText || transferDataLoading || transferDataError) {
         setMatchedAgreements(null);
+        setTotalMatchesCount(0);
+        setDistinctUniversitiesCount(0);
     }
   }, [summaryText, transferData, transferDataLoading, transferDataError, findAndDisplayTransferMatches]);
 
@@ -344,6 +365,13 @@ Transcript:\n\n${extractedText}`;
       {summaryText && !isSummarizing && ( 
         <div className="transfer-agreements-section">
           <h2>Potential Transfer Agreements:</h2>
+          {matchedAgreements && totalMatchesCount > 0 && (
+            <div className="matches-summary-info">
+              <p>
+                Found {totalMatchesCount} potential transfer agreement{totalMatchesCount !== 1 ? 's' : ''} at {distinctUniversitiesCount} distinct universit{distinctUniversitiesCount !== 1 ? 'ies' : 'y'}.
+              </p>
+            </div>
+          )}
           <div className="transfer-agreements-content-container">
             {transferDataLoading && <p className="status-message info">Loading transfer agreements...</p>}
             {transferDataError && <p className="status-message error">{transferDataError}</p>}

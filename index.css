@@ -179,11 +179,26 @@ input[type="file"]:hover {
 .transfer-agreements-section {
   margin-top: 30px;
   text-align: left;
-  /* Styles like padding, border, background-color are moved to the inner container */
 }
 
 .transfer-agreements-section h2 {
-  margin-top: 0; /* Keep this if it's the desired spacing for the heading */
+  margin-top: 0; 
+}
+
+.matches-summary-info {
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: #273344; 
+  border: 1px solid #334155; 
+  border-radius: 4px;
+  text-align: center;
+  font-size: 0.95em;
+  color: #CBD5E1;
+}
+
+.matches-summary-info p {
+  margin: 0;
+  padding: 0;
 }
 
 .transfer-agreements-content-container {
@@ -191,9 +206,9 @@ input[type="file"]:hover {
   border: 1px solid #334155;
   border-radius: 4px;
   padding: 15px;
-  max-height: 300px; /* Or a different height if desired */
+  max-height: 300px; 
   overflow-y: auto;
-  white-space: normal; /* Changed from pre-wrap as content is structured HTML */
+  white-space: normal; 
   word-wrap: break-word;
   font-family: Arial, sans-serif;
   font-size: 0.95em;
@@ -202,7 +217,7 @@ input[type="file"]:hover {
 }
 
 .transfer-agreement-item {
-  background-color: #1E293B; /* Slightly lighter than the content container bg, for item differentiation */
+  background-color: #1E293B; 
   border: 1px solid #475569; 
   border-radius: 6px;
   padding: 15px;
@@ -224,10 +239,9 @@ input[type="file"]:hover {
   font-size: 0.9em;
   padding: 10px;
   border-radius: 4px;
-  text-align: center; /* Centering status messages within the content container */
+  text-align: center; 
 }
 
-/* Specific status messages inside the new container might need adjusted selectors if they were originally styled based on the outer section */
 .transfer-agreements-content-container .status-message.info {
   color: #93C5FD; 
   background-color: #1E3A8A; 
