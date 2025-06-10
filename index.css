@@ -186,7 +186,7 @@ input[type="file"]:hover {
 }
 
 .matches-summary-info {
-  margin-bottom: 10px;
+  margin-bottom: 15px;
   padding: 10px;
   background-color: #273344; 
   border: 1px solid #334155; 
@@ -201,12 +201,30 @@ input[type="file"]:hover {
   padding: 0;
 }
 
+.course-match-group {
+  margin-bottom: 20px; /* Space between groups of matches for different courses */
+}
+
+.course-match-summary-line {
+  font-weight: bold;
+  color: #93C5FD; /* Light blue text (blue-300) for emphasis */
+  padding: 8px 0;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #334155; /* Slate-700 border */
+  font-size: 1em;
+}
+
+.course-match-summary-line strong {
+  color: #E2E8F0; /* Lighter slate (slate-200) for the course code itself */
+}
+
+
 .transfer-agreements-content-container {
   background-color: #0F172A;
   border: 1px solid #334155;
   border-radius: 4px;
   padding: 15px;
-  max-height: 300px; 
+  max-height: 400px; /* Increased max-height slightly to accommodate more detailed view */
   overflow-y: auto;
   white-space: normal; 
   word-wrap: break-word;
@@ -221,7 +239,8 @@ input[type="file"]:hover {
   border: 1px solid #475569; 
   border-radius: 6px;
   padding: 15px;
-  margin-bottom: 15px;
+  margin-bottom: 15px; /* Space between individual agreements */
+  margin-left: 10px; /* Indent individual agreements slightly under their course summary */
   color: #CBD5E1; 
 }
 

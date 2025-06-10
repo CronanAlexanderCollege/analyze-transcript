@@ -30,12 +30,18 @@ interface TransferAgreement {
   RcvrInstitutionName: string;
   Detail: string; // e.g., "AU ENGL 2XX (3)"
   Condition?: string | null;
-  // Add other fields if needed for display, but keep it concise
 }
 
 interface PassedCourse {
   subject: string;
   number: string;
+}
+
+interface GroupedMatchedAgreement {
+  passedCourse: PassedCourse;
+  agreements: TransferAgreement[];
+  totalAgreementsForCourse: number;
+  distinctUniversitiesForCourse: number;
 }
 
 function App() {
@@ -53,7 +59,7 @@ function App() {
   const [transferData, setTransferData] = useState<TransferAgreement[] | null>(null);
   const [transferDataLoading, setTransferDataLoading] = useState<boolean>(true);
   const [transferDataError, setTransferDataError] = useState<string | null>(null);
-  const [matchedAgreements, setMatchedAgreements] = useState<TransferAgreement[] | null>(null);
+  const [matchedAgreements, setMatchedAgreements] = useState<GroupedMatchedAgreement[] | null>(null);
   const [totalMatchesCount, setTotalMatchesCount] = useState<number>(0);
   const [distinctUniversitiesCount, setDistinctUniversitiesCount] = useState<number>(0);
 
@@ -85,7 +91,6 @@ function App() {
 
     initializeApp();
 
-    // Fetch transfer data
     const fetchTransferData = async () => {
       setTransferDataLoading(true);
       setTransferDataError(null);
@@ -243,14 +248,9 @@ Transcript:\n\n${extractedText}`;
 
   const parsePassedCoursesFromSummary = (summary: string): PassedCourse[] => {
     const courses: PassedCourse[] = [];
-    // Regex to capture: Subject Code (e.g., ENGL, MATH), Course Number (e.g., 100, 101A), Grade (e.g., A+, B, P, 75%)
-    // Allows for 2-6 letters (case-insensitive) for subject, and 3-5 alphanumeric (case-insensitive for letters) for course number.
-    // Updated to match lines starting with optional whitespace then '*' or '-'
     const courseRegex = /^\s*[*-]\s*([A-Za-z]{2,6})\s*([A-Za-z0-9]{3,5})\s*:\s*([A-Z][+-]?|[B-DFP][+-]?|[0-9]{1,3}%?)/gm;
     let match;
     while ((match = courseRegex.exec(summary)) !== null) {
-        // The prompt already instructs the AI to filter out 'W' grades and handle multiple attempts.
-        // This regex focuses on capturing the course code and number from successfully listed items.
         courses.push({ subject: match[1].trim(), number: match[2].trim() });
     }
     return courses;
@@ -272,29 +272,40 @@ Transcript:\n\n${extractedText}`;
       return;
     }
 
-    const matches: TransferAgreement[] = [];
+    const groupedMatches: GroupedMatchedAgreement[] = [];
+    let overallTotalAgreements = 0;
+    const overallDistinctUniversities = new Set<string>();
+
     passedCourses.forEach(passedCourse => {
+      const agreementsForThisCourse: TransferAgreement[] = [];
       transferData.forEach(agreement => {
         if (agreement.SndrSubjectCode && agreement.SndrCourseNumber &&
             agreement.SndrSubjectCode.trim().toUpperCase() === passedCourse.subject.toUpperCase() &&
             agreement.SndrCourseNumber.trim().toUpperCase() === passedCourse.number.toUpperCase()) {
-          matches.push(agreement);
+          agreementsForThisCourse.push(agreement);
+          overallDistinctUniversities.add(agreement.RcvrInstitutionName);
         }
       });
+
+      if (agreementsForThisCourse.length > 0) {
+        const distinctUniversitiesForCourseSet = new Set<string>();
+        agreementsForThisCourse.forEach(ag => distinctUniversitiesForCourseSet.add(ag.RcvrInstitutionName));
+        
+        groupedMatches.push({
+          passedCourse: passedCourse,
+          agreements: agreementsForThisCourse,
+          totalAgreementsForCourse: agreementsForThisCourse.length,
+          distinctUniversitiesForCourse: distinctUniversitiesForCourseSet.size,
+        });
+        overallTotalAgreements += agreementsForThisCourse.length;
+      }
     });
     
-    setTotalMatchesCount(matches.length);
-    if (matches.length > 0) {
-      const distinctUnis = new Set<string>();
-      matches.forEach(agreement => {
-        distinctUnis.add(agreement.RcvrInstitutionName);
-      });
-      setDistinctUniversitiesCount(distinctUnis.size);
-    } else {
-      setDistinctUniversitiesCount(0);
-    }
-    setMatchedAgreements(matches);
-  }, [summaryText, transferData]);
+    setMatchedAgreements(groupedMatches);
+    setTotalMatchesCount(overallTotalAgreements);
+    setDistinctUniversitiesCount(overallDistinctUniversities.size);
+
+  }, [summaryText, transferData, parsePassedCoursesFromSummary]);
 
 
   useEffect(() => {
@@ -379,19 +390,26 @@ Transcript:\n\n${extractedText}`;
               <p className="status-message info">Processing transfer matches...</p>
             )}
             {!transferDataLoading && !transferDataError && transferData && matchedAgreements && matchedAgreements.length > 0 && (
-              matchedAgreements.map((agreement, index) => (
-                <div key={agreement.Id + '-' + index} className="transfer-agreement-item">
-                  <p>
-                    <strong>Your course:</strong> {agreement.SndrInstitutionName} - {agreement.SndrSubjectCode} {agreement.SndrCourseNumber}: {agreement.SndrCourseTitle} ({agreement.SndrCourseCredit} credits)
+              matchedAgreements.map((courseGroup) => (
+                <div key={`${courseGroup.passedCourse.subject}-${courseGroup.passedCourse.number}`} className="course-match-group">
+                  <p className="course-match-summary-line">
+                    <strong>{courseGroup.passedCourse.subject.toUpperCase()} {courseGroup.passedCourse.number.toUpperCase()}:</strong> Found {courseGroup.totalAgreementsForCourse} potential transfer agreement{courseGroup.totalAgreementsForCourse !== 1 ? 's' : ''} at {courseGroup.distinctUniversitiesForCourse} distinct universit{courseGroup.distinctUniversitiesForCourse !== 1 ? 'ies' : 'y'}.
                   </p>
-                  <p>
-                    <strong>Transfers to:</strong> {agreement.RcvrInstitutionName} as {agreement.Detail}
-                  </p>
-                  {agreement.Condition && <p><strong>Condition:</strong> {agreement.Condition}</p>}
+                  {courseGroup.agreements.map((agreement, index) => (
+                    <div key={agreement.Id + '-' + index} className="transfer-agreement-item">
+                      <p>
+                        <strong>Your course:</strong> {agreement.SndrInstitutionName} - {agreement.SndrSubjectCode} {agreement.SndrCourseNumber}: {agreement.SndrCourseTitle} ({agreement.SndrCourseCredit} credits)
+                      </p>
+                      <p>
+                        <strong>Transfers to:</strong> {agreement.RcvrInstitutionName} as {agreement.Detail}
+                      </p>
+                      {agreement.Condition && <p><strong>Condition:</strong> {agreement.Condition}</p>}
+                    </div>
+                  ))}
                 </div>
               ))
             )}
-            {!transferDataLoading && !transferDataError && transferData && matchedAgreements && matchedAgreements.length === 0 && (
+            {!transferDataLoading && !transferDataError && transferData && matchedAgreements && matchedAgreements.length === 0 && totalMatchesCount === 0 && (
               <p className="status-message">No potential transfer agreements found for the summarized courses.</p>
             )}
           </div>
