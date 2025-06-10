@@ -237,9 +237,9 @@ Transcript:\n\n${extractedText}`;
   const parsePassedCoursesFromSummary = (summary: string): PassedCourse[] => {
     const courses: PassedCourse[] = [];
     // Regex to capture: Subject Code (e.g., ENGL, MATH), Course Number (e.g., 100, 101A), Grade (e.g., A+, B, P, 75%)
-    // Allows for 2-6 uppercase letters for subject, and 3-5 alphanumeric for course number.
+    // Allows for 2-6 letters (case-insensitive) for subject, and 3-5 alphanumeric (case-insensitive for letters) for course number.
     // Updated to match lines starting with optional whitespace then '*' or '-'
-    const courseRegex = /^\s*[*-]\s*([A-Z]{2,6})\s*([A-Z0-9]{3,5})\s*:\s*([A-Z][+-]?|[B-DFP][+-]?|[0-9]{1,3}%?)/gm;
+    const courseRegex = /^\s*[*-]\s*([A-Za-z]{2,6})\s*([A-Za-z0-9]{3,5})\s*:\s*([A-Z][+-]?|[B-DFP][+-]?|[0-9]{1,3}%?)/gm;
     let match;
     while ((match = courseRegex.exec(summary)) !== null) {
         // The prompt already instructs the AI to filter out 'W' grades and handle multiple attempts.
